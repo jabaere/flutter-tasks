@@ -1,4 +1,4 @@
-# Instagram login screen clone
+# Instagram login screen clone - Jaba kobriashvili
 ![example](https://github.com/user-attachments/assets/48d59966-a99a-4422-998f-62d9aa7c9fdf)
 
 A new Flutter project.
