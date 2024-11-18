@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/constants.dart';
+import '../../styles/app_styles.dart';
 
 class LearnMoreText extends StatelessWidget {
 
@@ -19,7 +20,7 @@ class LearnMoreText extends StatelessWidget {
               TextSpan(
                 text: 'People who use our service may have uploaded your contact information to Instagram. ',
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: AppTheme.helperTextCol,
                   fontSize:  15 ,
                   letterSpacing: 0.5,
                   fontFamily: defaultFont
@@ -28,7 +29,7 @@ class LearnMoreText extends StatelessWidget {
               TextSpan(
                 text: 'Learn more ',
                 style: TextStyle(
-                  color: Colors.blue,  // Link color
+                  color: AppTheme.linkTextCol,  // Link color
                   decoration: TextDecoration.none,
                   fontSize: 15,
                     letterSpacing: 0.8,

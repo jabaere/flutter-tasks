@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/constants.dart';
+import '../../styles/app_styles.dart';
 
 class PrivacyPolicyText extends StatelessWidget {
 
@@ -19,7 +20,7 @@ class PrivacyPolicyText extends StatelessWidget {
               TextSpan(
                 text: 'By signing up, you agree to our ',
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: AppTheme.helperTextCol,
                   fontSize:  15 ,
                   letterSpacing: 0.8,
                   fontFamily: defaultFont
@@ -28,7 +29,7 @@ class PrivacyPolicyText extends StatelessWidget {
               TextSpan(
                 text: 'Terms, ',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: AppTheme.linkTextCol,
                   decoration: TextDecoration.none,
                   fontSize: 15,
                   fontFamily: defaultFont
@@ -39,7 +40,7 @@ class PrivacyPolicyText extends StatelessWidget {
               TextSpan(
                 text: 'Privacy Policy, ',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: AppTheme.linkTextCol,
                   decoration: TextDecoration.none,
                   fontSize: 15,
                   fontFamily: defaultFont
@@ -50,7 +51,7 @@ class PrivacyPolicyText extends StatelessWidget {
               TextSpan(
                 text: 'and ',
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: AppTheme.helperTextCol,
                   fontSize:  15 ,
                   letterSpacing: 0.8,
                   fontFamily: defaultFont
@@ -59,7 +60,7 @@ class PrivacyPolicyText extends StatelessWidget {
               TextSpan(
                 text: 'Cookies Policy',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: AppTheme.linkTextCol,
                   decoration: TextDecoration.none,
                   fontSize: 15,
                   fontFamily: defaultFont
