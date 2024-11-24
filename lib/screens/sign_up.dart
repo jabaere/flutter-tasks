@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import '../components/login_/button.dart';
+import '../components/login_/facebook_login_button.dart';
 import '../components/login_/input.dart';
+import '../components/login_/learn_more_text.dart';
+import '../components/login_/privacy_policy_text.dart';
+import '../components/login_/separator.dart';
 import 'home.dart';
-import 'sign_up.dart';
 
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  SignUpScreenState createState() => SignUpScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _mobileOrEmailController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  bool signUpisLoading = false;
-  bool signinisLoading = false;
+  bool isLoading = false;
   bool fbIsLoading = false;
 
   final helperTextColor = const Color.fromARGB(221, 225, 227, 228);
@@ -66,7 +68,20 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 20),
 
-
+                      // Facebook Login Button
+                      FacebookLoginButton(
+                        isLoading: fbIsLoading,
+                        onPressed: () async {
+                          setState(() {
+                            fbIsLoading = true;
+                          });
+                          await signUp(context);
+                          setState(() {
+                            fbIsLoading = false;
+                          });
+                        },
+                      ),
+                      const OrSeparator(),
 
                       // Mobile or Email input
                       InputField(
@@ -84,28 +99,36 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 20),
 
+                      // Full Name input
+                      InputField(
+                        controller: _fullNameController,
+                        labelText: 'Full Name',
+                        isObscure: false,
+                      ),
+                      const SizedBox(height: 10),
+
+                      // User Name input
+                      InputField(
+                        controller: _userNameController,
+                        labelText: 'Username',
+                        isObscure: false,
+                      ),
+
+
+                      // Terms & Conditions and Privacy text
+                      const SizedBox(height: 10),
+                      //learn more text
+                      const LearnMoreText(),
+                      const SizedBox(height: 10),
+
+                      //privacy terms text
+                      const PrivacyPolicyText(),
+
+                      const SizedBox(height: 20),
+
                       // Sign-up Button
                       DefaultButton(
-                        isLoading: signinisLoading,
-                        title: 'Log In',
-                        bgColor: Colors.blue,
-                        txtColor: Colors.white,
-                        borderRadius: 5,
-                        borderColor: Colors.blue,
-                        btnWidth: 300,
-                        onPressed: () async {
-                          setState(() {
-                            signinisLoading = true;
-                          });
-                          await signIn(context);
-                          setState(() {
-                            signinisLoading = false;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      DefaultButton(
-                        isLoading: signUpisLoading,
+                        isLoading: isLoading,
                         title: 'Sign Up',
                         bgColor: Colors.blue,
                         txtColor: Colors.white,
@@ -114,11 +137,11 @@ class LoginScreenState extends State<LoginScreen> {
                         btnWidth: 300,
                         onPressed: () async {
                           setState(() {
-                            signUpisLoading = true;
+                            isLoading = true;
                           });
                           await signUp(context);
                           setState(() {
-                            signUpisLoading = false;
+                            isLoading = false;
                           });
                         },
                       ),
@@ -133,7 +156,7 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> signIn(context) async {
+  Future<void> signUp(context) async {
     String mobileOrEmail = _mobileOrEmailController.text;
     String password = _passwordController.text;
     String fullName = _fullNameController.text;
@@ -143,17 +166,6 @@ class LoginScreenState extends State<LoginScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const HomeScreen(),
-      ),
-    );
-  }
-
-  Future<void> signUp(context) async {
-
-
-    await Future.delayed(const Duration(seconds: 2));
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const SignUpScreen(),
       ),
     );
   }
