@@ -5,27 +5,49 @@ import '../components/login_/input.dart';
 import '../components/login_/learn_more_text.dart';
 import '../components/login_/privacy_policy_text.dart';
 import '../components/login_/separator.dart';
+import '../models.dart';
 import 'home.dart';
+import '../objectbox.g.dart';
+
 
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final Store store;
+
+  const SignUpScreen({super.key, required this.store});
 
   @override
   SignUpScreenState createState() => SignUpScreenState();
 }
 
 class SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _mobileOrEmailController =
-  TextEditingController();
+  final TextEditingController _mobileOrEmailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _confPasswordController = TextEditingController();
 
   bool isLoading = false;
   bool fbIsLoading = false;
 
-  final helperTextColor = const Color.fromARGB(221, 225, 227, 228);
+  late Box<User> _userBox;
+
+  @override
+  void initState() {
+    super.initState();
+    _userBox = widget.store.box<User>();
+  }
+
+  @override
+  void dispose() {
+
+    _mobileOrEmailController.dispose();
+    _passwordController.dispose();
+    _confPasswordController.dispose();
+    _locationController.dispose();
+    _userNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +60,6 @@ class SignUpScreenState extends State<SignUpScreen> {
             width: screenSize.width,
             child: Column(
               children: [
-                // Instagram logo
                 Padding(
                   padding: const EdgeInsets.only(top: 50.0, bottom: 0.0),
                   child: Image.asset(
@@ -47,8 +68,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                     height: 70,
                   ),
                 ),
-
-                // Sign-up instructions
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50.0),
                   child: Column(
@@ -59,74 +78,56 @@ class SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(
                           color: Colors.black87,
                           letterSpacing: 0.8,
-                          fontSize: 17 ,
+                          fontSize: 17,
                           fontFamily: 'ProximaNova',
                           fontWeight: FontWeight.bold,
-
                         ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
-
-                      // Facebook Login Button
                       FacebookLoginButton(
                         isLoading: fbIsLoading,
                         onPressed: () async {
-                          setState(() {
-                            fbIsLoading = true;
-                          });
+                          setState(() => fbIsLoading = true);
                           await signUp(context);
-                          setState(() {
-                            fbIsLoading = false;
-                          });
+                          setState(() => fbIsLoading = false);
                         },
                       ),
                       const OrSeparator(),
-
-                      // Mobile or Email input
                       InputField(
                         controller: _mobileOrEmailController,
                         labelText: 'Mobile number or email address',
                         isObscure: false,
                       ),
                       const SizedBox(height: 20),
-
-                      // Password input
                       InputField(
                         controller: _passwordController,
                         labelText: 'Password',
                         isObscure: true,
                       ),
                       const SizedBox(height: 20),
-
-                      // Full Name input
                       InputField(
-                        controller: _fullNameController,
-                        labelText: 'Full Name',
+                        controller: _confPasswordController,
+                        labelText: 'Confirm Password',
+                        isObscure: true,
+                      ),
+                      const SizedBox(height: 20),
+                      InputField(
+                        controller: _locationController,
+                        labelText: 'Location',
                         isObscure: false,
                       ),
                       const SizedBox(height: 10),
-
-                      // User Name input
                       InputField(
                         controller: _userNameController,
                         labelText: 'Username',
                         isObscure: false,
                       ),
-
-
-                      // Terms & Conditions and Privacy text
                       const SizedBox(height: 10),
-                      //learn more text
                       const LearnMoreText(),
                       const SizedBox(height: 10),
-
-                      //privacy terms text
                       const PrivacyPolicyText(),
-
                       const SizedBox(height: 20),
-
-                      // Sign-up Button
                       DefaultButton(
                         isLoading: isLoading,
                         title: 'Sign Up',
@@ -136,13 +137,9 @@ class SignUpScreenState extends State<SignUpScreen> {
                         borderColor: Colors.blue,
                         btnWidth: 300,
                         onPressed: () async {
-                          setState(() {
-                            isLoading = true;
-                          });
+                          setState(() => isLoading = true);
                           await signUp(context);
-                          setState(() {
-                            isLoading = false;
-                          });
+                          setState(() => isLoading = false);
                         },
                       ),
                     ],
@@ -156,17 +153,32 @@ class SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Future<void> signUp(context) async {
-    String mobileOrEmail = _mobileOrEmailController.text;
+  Future<void> signUp(BuildContext context) async {
+    String mobileOrEmail = _mobileOrEmailController.text.trim();
     String password = _passwordController.text;
-    String fullName = _fullNameController.text;
-    String username = _userNameController.text;
+    String confirmPassword = _confPasswordController.text;
+    String location = _locationController.text.trim();
+    String username = _userNameController.text.trim();
 
-    await Future.delayed(const Duration(seconds: 2));
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
-      ),
-    );
+    if (mobileOrEmail.isEmpty || password.isEmpty || confirmPassword.isEmpty || location.isEmpty || username.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('All fields are required')));
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match!')));
+      return;
+    }
+
+    final user = User(mobile: mobileOrEmail, password: password, location: location, name: username);
+
+    try {
+      int id = await _userBox.put(user); // Save user to ObjectBox
+
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen(userId:id,store: widget.store)));
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error signing up user. Please try again later.')));
+    }
   }
 }
